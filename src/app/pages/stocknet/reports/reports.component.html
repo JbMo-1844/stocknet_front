@@ -1,0 +1,70 @@
+<div class="space-y-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">Reports</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Alerts and activity logs</h1>
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Menu inventory alerts</h2>
+      <span class="rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700 dark:bg-amber-500/10 dark:text-amber-300">{{ alerts.length }} alerts</span>
+    </div>
+
+    @if (alerts.length) {
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead class="text-gray-500">
+            <tr>
+              <th class="py-2">Item</th>
+              <th class="py-2">Required</th>
+              <th class="py-2">Available</th>
+              <th class="py-2">Menu</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (alert of alerts; track alert.item + alert.day + alert.meal_type) {
+              <tr class="border-t border-gray-100 dark:border-gray-800">
+                <td class="py-3 font-medium text-gray-900 dark:text-white">{{ alert.item }}</td>
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ alert.required_quantity }}</td>
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ alert.available_quantity }}</td>
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ alert.day }} · {{ alert.meal_type }} · Cell {{ alert.cell }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="mt-4 text-sm text-gray-600 dark:text-gray-300">No inventory mismatches were found in the current menus.</p>
+    }
+  </div>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Activity log</h2>
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="text-gray-500">
+          <tr>
+            <th class="py-2">Type</th>
+            <th class="py-2">Details</th>
+            <th class="py-2">Performed by</th>
+            <th class="py-2">Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs; track log.timestamp + log.type + log.target) {
+            <tr class="border-t border-gray-100 dark:border-gray-800">
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ log.type }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ log.description }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ log.performed_by }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ log.target }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

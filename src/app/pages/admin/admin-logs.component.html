@@ -1,0 +1,29 @@
+<div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+  <div class="mb-4">
+    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">System activity log</h2>
+    <p class="text-sm text-gray-500 dark:text-gray-400">A timeline of important actions performed in the system.</p>
+  </div>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 text-sm dark:divide-gray-800">
+      <thead>
+        <tr class="text-left text-gray-600 dark:text-gray-400">
+          <th class="px-3 py-2">Time</th>
+          <th class="px-3 py-2">Actor</th>
+          <th class="px-3 py-2">Action</th>
+          <th class="px-3 py-2">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (log of logs; track log.id) {
+          <tr class="border-b border-gray-100 dark:border-gray-800">
+            <td class="px-3 py-3">{{ log.created_at | date:'medium' }}</td>
+            <td class="px-3 py-3">{{ log.actor }}</td>
+            <td class="px-3 py-3">{{ log.action }}</td>
+            <td class="px-3 py-3">{{ log.details }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

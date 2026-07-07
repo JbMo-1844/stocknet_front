@@ -1,0 +1,121 @@
+<div class="space-y-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">Procurement</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Purchase and supplier management</h1>
+      </div>
+      <button type="button" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white" (click)="toggleForm()">{{ showForm ? 'Cancel' : 'New Purchase' }}</button>
+    </div>
+  </div>
+
+  @if (message) {
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+      {{ message }}
+    </div>
+  }
+
+  @if (showForm) {
+    <form [formGroup]="procurementForm" (ngSubmit)="submitPurchase()" class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Date of purchase</label>
+          <input type="date" formControlName="date" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Supplier</label>
+          <input formControlName="supplier" placeholder="Supplier name" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Invoice number</label>
+          <input formControlName="invoice" placeholder="INV-1001" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Item purchased</label>
+          <input formControlName="item" placeholder="Rice, oil, tomatoes..." class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Quantity</label>
+          <input type="number" formControlName="quantity" placeholder="50" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Unit</label>
+          <input formControlName="unit" placeholder="bags, drums, kg" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Amount</label>
+          <input type="number" formControlName="amount" placeholder="3250" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Purchaser</label>
+          <input formControlName="purchaser" placeholder="Name of purchaser" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Status</label>
+          <select formControlName="status" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
+            <option value="Pending">Pending</option>
+            <option value="Received">Received</option>
+            <option value="Approved">Approved</option>
+          </select>
+        </div>
+      </div>
+      <div class="mt-4">
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Additional notes</label>
+        <textarea formControlName="note" rows="3" placeholder="Delivery notes, payment terms, or remarks" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"></textarea>
+      </div>
+      <div class="mt-4 flex justify-end">
+        <button type="submit" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white">Save purchase</button>
+      </div>
+    </form>
+  }
+
+  <div class="grid gap-4 md:grid-cols-3">
+    @for (card of cards; track card.label) {
+      <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <p class="text-sm text-gray-500">{{ card.label }}</p>
+        <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">{{ card.value }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Purchase records</h2>
+      <button class="text-sm font-medium text-emerald-600">Export</button>
+    </div>
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="text-gray-500">
+          <tr>
+            <th class="py-2">Date</th>
+            <th class="py-2">Supplier</th>
+            <th class="py-2">Invoice</th>
+            <th class="py-2">Item</th>
+            <th class="py-2">Qty</th>
+            <th class="py-2">Amount</th>
+            <th class="py-2">Purchaser</th>
+            <th class="py-2">Status</th>
+            <th class="py-2">Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (purchase of purchases; track purchase.invoice) {
+            <tr class="border-t border-gray-100 dark:border-gray-800">
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.date }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.supplier }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.invoice }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.item }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.qty }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.amount }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.purchaser }}</td>
+              <td class="py-3">
+                <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="purchase.status === 'Pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'">{{ purchase.status }}</span>
+              </td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.note }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

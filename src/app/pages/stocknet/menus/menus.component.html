@@ -1,0 +1,115 @@
+<div class="space-y-6">
+  <div class="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">Menu Planner</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Weekly meal planner</h1>
+      </div>
+      <button type="button" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white" (click)="toggleForm()">{{ showMenuForm ? 'Close planner' : 'Plan meals' }}</button>
+    </div>
+  </div>
+
+  @if (message) {
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+      {{ message }}
+    </div>
+  }
+
+  <div class="rounded-3xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-wrap gap-2">
+      @for (day of daysOfWeek; track day) {
+        <button type="button" class="rounded-2xl border px-3 py-2 text-sm font-medium transition" [ngClass]="selectedDay === day ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-300' : 'border-gray-200 text-gray-700 hover:border-emerald-300 dark:border-gray-700 dark:text-gray-200'" (click)="selectDay(day)">
+          {{ day }}
+        </button>
+      }
+    </div>
+
+    <div class="mt-6 grid gap-4 lg:grid-cols-3">
+      @for (meal of getMealEntriesForSelectedDay(); track meal.mealType) {
+        <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800/70">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ meal.mealType }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Tap to add or update dishes</p>
+            </div>
+            <button type="button" class="rounded-full border border-emerald-200 px-3 py-1 text-sm font-medium text-emerald-700 dark:border-emerald-500/20 dark:text-emerald-300" (click)="openMealPlanner(meal.mealType)">Edit</button>
+          </div>
+
+          <div class="mt-4 space-y-3">
+            @if (meal.entry?.menuItems?.length) {
+              @for (menuItem of meal.entry?.menuItems ?? []; track menuItem.item) {
+                <div class="flex items-center justify-between rounded-xl border border-white bg-white px-3 py-2 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+                  <div>
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ menuItem.item }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ menuItem.quantity }}</p>
+                  </div>
+                  <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">Planned</span>
+                </div>
+              }
+            } @else {
+              <div class="rounded-xl border border-dashed border-gray-300 px-3 py-6 text-center text-sm text-gray-500 dark:border-gray-600 dark:text-gray-400">
+                No dishes planned yet.
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (showMenuForm) {
+    <form [formGroup]="menuForm" (ngSubmit)="submitMenu()" class="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="flex flex-col gap-2 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">{{ activeMealType ?? menuForm.get('mealType')?.value }}</p>
+          <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Plan dishes for {{ selectedDay }}</h2>
+        </div>
+        <div class="text-sm text-gray-500 dark:text-gray-400">Cell {{ menuForm.get('cell')?.value }} · {{ menuForm.get('cellLeader')?.value || 'Add a cell leader' }}</div>
+      </div>
+
+      <div class="mt-6 grid gap-4 lg:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Day</label>
+          <select formControlName="day" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
+            @for (day of daysOfWeek; track day) {
+              <option [value]="day">{{ day }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Cell</label>
+          <select formControlName="cell" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
+            @for (cell of cells; track cell) {
+              <option [value]="cell">Cell {{ cell }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Cell leader</label>
+          <input formControlName="cellLeader" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Dishes and quantities</h3>
+          <button type="button" class="text-sm font-medium text-emerald-600" (click)="addMenuItem()">+ Add dish</button>
+        </div>
+
+        <div formArrayName="menuItems" class="mt-4 space-y-3">
+          @for (itemGroup of menuItemsArray.controls; track $index) {
+            <div [formGroupName]="$index" class="grid gap-3 md:grid-cols-[1fr_200px_auto]">
+              <input formControlName="item" placeholder="Food item" class="rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+              <input formControlName="quantity" placeholder="Quantity" class="rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+              <button type="button" class="rounded-lg border border-red-200 px-3 py-2 text-sm text-red-600" (click)="removeMenuItem($index)">Remove</button>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button type="submit" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white">{{ editingMenuId !== null ? 'Update meal plan' : 'Save meal plan' }}</button>
+      </div>
+    </form>
+  }
+</div>

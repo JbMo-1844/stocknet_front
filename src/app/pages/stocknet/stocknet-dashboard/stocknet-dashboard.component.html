@@ -1,0 +1,125 @@
+<div class="space-y-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">StockNet</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Lucky Summer SDA Store & Kitchen Operations</h1>
+        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">Inventory visibility, procurement control, and menu planning in one workspace.</p>
+      </div>
+      <div class="rounded-xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+        Last sync: 5 mins ago
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    @for (metric of metrics; track metric.label) {
+      <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+        <div class="h-2 w-full rounded-full bg-gradient-to-r {{ metric.color }}"></div>
+        <p class="mt-4 text-sm text-gray-500">{{ metric.label }}</p>
+        <p class="mt-2 text-2xl font-semibold text-gray-900 dark:text-white">{{ metric.value }}</p>
+        <p class="mt-1 text-sm text-emerald-600">{{ metric.change }}</p>
+      </div>
+    }
+  </div>
+
+  <div class="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
+    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Inventory snapshot</h2>
+        <a routerLink="/inventory" class="text-sm font-medium text-emerald-600">View all</a>
+      </div>
+      <div class="mt-4 space-y-3">
+        @for (item of inventoryItems; track item.name) {
+          <div class="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/70">
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">{{ item.name }}</p>
+              <p class="text-sm text-gray-500">{{ item.note }}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ item.qty }}</p>
+              <p class="text-xs" [ngClass]="item.status === 'Low' ? 'text-amber-600' : 'text-emerald-600'">{{ item.status }}</p>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Today’s focus</h2>
+      <ul class="mt-4 space-y-3 text-sm text-gray-600 dark:text-gray-300">
+        @for (focus of focusItems; track focus.title) {
+          <li class="rounded-xl p-3 {{ focus.tone }}">{{ focus.title }}</li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent purchases</h2>
+        <a routerLink="/procurement" class="text-sm font-medium text-emerald-600">Open procurement</a>
+      </div>
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full text-left text-sm">
+          <thead class="text-gray-500">
+            <tr>
+              <th class="py-2">Date</th>
+              <th class="py-2">Supplier</th>
+              <th class="py-2">Item</th>
+              <th class="py-2">Amount</th>
+              <th class="py-2">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (purchase of recentPurchases; track purchase.item) {
+              <tr class="border-t border-gray-100 dark:border-gray-800">
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.date }}</td>
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.supplier }}</td>
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.item }}</td>
+                <td class="py-3 text-gray-700 dark:text-gray-200">{{ purchase.amount }}</td>
+                <td class="py-3">
+                  <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="purchase.status === 'Pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300' : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'">{{ purchase.status }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Latest releases</h2>
+        <a routerLink="/inventory" class="text-sm font-medium text-emerald-600">View inventory</a>
+      </div>
+      <div class="mt-4 space-y-3">
+        @for (release of releaseActivity; track release.day + release.item) {
+          <div class="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/70">
+            <p class="font-medium text-gray-900 dark:text-white">{{ release.day }} {{ release.meal }}</p>
+            <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">{{ release.item }} — {{ release.qty }}</p>
+            <p class="text-sm text-gray-500">Given to {{ release.person }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Weekly menu preview</h2>
+      <a routerLink="/menus" class="text-sm font-medium text-emerald-600">Manage menus</a>
+    </div>
+    <div class="mt-4 grid gap-3 lg:grid-cols-3">
+      @for (day of weeklyMenu; track day.day) {
+        <div class="rounded-xl border border-gray-100 bg-gray-50 p-3 dark:border-gray-800 dark:bg-gray-800/70">
+          <p class="font-medium text-gray-900 dark:text-white">{{ day.day }}</p>
+          <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Breakfast: {{ day.breakfast }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Lunch: {{ day.lunch }}</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Supper: {{ day.supper }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>

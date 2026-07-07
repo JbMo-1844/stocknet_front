@@ -1,0 +1,91 @@
+<div class="space-y-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">Tender Management</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Create, edit, and publish tenders</h1>
+      </div>
+      <button type="button" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white" (click)="clearForm()">New tender</button>
+    </div>
+  </div>
+
+  @if (message) {
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+      {{ message }}
+    </div>
+  }
+
+  <form [formGroup]="tenderForm" (ngSubmit)="submitTender()" class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Tender reference</label>
+        <input formControlName="reference" placeholder="TND-2026-001" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Tender title</label>
+        <input formControlName="title" placeholder="Bulk rice supply" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Closing date</label>
+        <input type="date" formControlName="closing_date" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+      </div>
+    </div>
+
+    <div class="mt-4 grid gap-4 xl:grid-cols-2">
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Description</label>
+        <textarea formControlName="description" rows="4" placeholder="Tender scope and delivery expectations" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"></textarea>
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Specification</label>
+        <textarea formControlName="specification" rows="4" placeholder="Material specification, quality and packaging requirements" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800"></textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 flex justify-end gap-2">
+      @if (selectedTenderId !== null) {
+        <button type="button" class="rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700" (click)="clearForm()">Cancel edit</button>
+      }
+      <button type="submit" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white">{{ selectedTenderId !== null ? 'Update tender' : 'Save tender' }}</button>
+    </div>
+  </form>
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Published tenders</h2>
+        <p class="text-sm text-gray-500">Manage active bids and supplier announcements.</p>
+      </div>
+    </div>
+
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="text-gray-500">
+          <tr>
+            <th class="py-2">Reference</th>
+            <th class="py-2">Title</th>
+            <th class="py-2">Closing date</th>
+            <th class="py-2">Status</th>
+            <th class="py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tender of tenders; track tender.reference) {
+            <tr class="border-t border-gray-100 dark:border-gray-800">
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ tender.reference }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ tender.title }}</td>
+              <td class="py-3 text-gray-700 dark:text-gray-200">{{ tender.closing_date }}</td>
+              <td class="py-3">
+                <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="tender.published ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300' : 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'">{{ tender.published ? 'Published' : 'Draft' }}</span>
+              </td>
+              <td class="py-3 space-x-2">
+                <button type="button" class="rounded-lg border border-gray-200 px-3 py-2 text-sm font-medium text-slate-700" (click)="editTender(tender)">Edit</button>
+                <button type="button" class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700" [disabled]="tender.published" (click)="publishTender(tender)">Publish</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

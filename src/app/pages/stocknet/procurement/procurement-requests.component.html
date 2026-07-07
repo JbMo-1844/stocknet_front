@@ -1,0 +1,134 @@
+<div class="space-y-6">
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.24em] text-emerald-600">Procurement Requests</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-white">Department request workflow</h1>
+      </div>
+      <button type="button" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white" (click)="toggleForm()">{{ showForm ? 'Cancel request' : 'New procurement request' }}</button>
+    </div>
+  </div>
+
+  @if (message) {
+    <div class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-300">
+      {{ message }}
+    </div>
+  }
+
+  @if (showForm) {
+    <form [formGroup]="requestForm" (ngSubmit)="submitRequest()" class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+      <div class="grid gap-4 md:grid-cols-3">
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Department</label>
+          <input formControlName="department" placeholder="Kitchen, Housekeeping..." class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Estimated budget</label>
+          <input type="number" formControlName="budget_estimate" placeholder="1200" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Justification</label>
+          <input formControlName="justification" placeholder="Why this request is required" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+        </div>
+      </div>
+
+      <div class="mt-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Requested items</h2>
+          <button type="button" class="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800" (click)="addItemRow()">Add item</button>
+        </div>
+
+        <div formArrayName="requestItems" class="space-y-4">
+          @for (item of itemsArray.controls; track $index) {
+          <div [formGroupName]="$index" class="grid gap-4 md:grid-cols-5 items-end rounded-2xl border border-gray-200 bg-slate-50 p-4 dark:border-gray-700 dark:bg-gray-900">
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Item name</label>
+              <input formControlName="item_name" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Quantity</label>
+              <input type="number" formControlName="quantity" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Unit</label>
+              <input formControlName="unit" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+            </div>
+            <div>
+              <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Estimated cost</label>
+              <input type="number" formControlName="estimated_price" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+            </div>
+            <div class="flex flex-col gap-2">
+              <button type="button" class="rounded-xl bg-rose-600 px-3 py-2 text-sm font-medium text-white" (click)="removeItemRow($index)">Remove</button>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <div class="mt-6 flex justify-end">
+        <button type="submit" class="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white">Submit request</button>
+      </div>
+    </form>
+  }
+
+  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-900">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Requests queue</h2>
+      <span class="text-sm text-gray-500">{{ requests.length }} requests</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="text-gray-500">
+          <tr>
+            <th class="py-2">Reference</th>
+            <th class="py-2">Department</th>
+            <th class="py-2">Budget</th>
+            <th class="py-2">Status</th>
+            <th class="py-2">Submitted</th>
+            <th class="py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (request of requests; track request.id) {
+          <tr class="border-t border-gray-100 dark:border-gray-800">
+            <td class="py-3 text-gray-700 dark:text-gray-200">REQ-{{ request.id }}</td>
+            <td class="py-3 text-gray-700 dark:text-gray-200">{{ request.department }}</td>
+            <td class="py-3 text-gray-700 dark:text-gray-200">GHS {{ request.budget_estimate }}</td>
+            <td class="py-3">
+              <span class="rounded-full px-2.5 py-1 text-xs font-medium" [ngClass]="statusBadgeClass(request.status)">{{ request.status }}</span>
+            </td>
+            <td class="py-3 text-gray-700 dark:text-gray-200">{{ request.created_at | date:'medium' }}</td>
+            <td class="py-3 space-x-2">
+              @if (request.status === 'Pending') {
+              <button type="button" class="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-semibold text-white" (click)="approveRequest(request)">Approve</button>
+              <button type="button" class="rounded-xl bg-rose-600 px-3 py-2 text-xs font-semibold text-white" (click)="rejectRequest(request)">Reject</button>
+              }
+              <button type="button" class="rounded-xl border border-gray-200 px-3 py-2 text-xs text-gray-700 dark:border-gray-700 dark:text-gray-200" (click)="toggleTimeline(request)">{{ request.showTimeline ? 'Hide' : 'View' }} timeline</button>
+            </td>
+          </tr>
+          @if (request.showTimeline) {
+          <tr class="bg-slate-50 dark:bg-gray-900">
+            <td colspan="6" class="px-6 py-4 text-sm text-gray-700 dark:text-gray-200">
+              <div class="space-y-2">
+                <p class="font-semibold">Justification</p>
+                <p>{{ request.justification }}</p>
+                <div class="mt-3 space-y-2">
+                  @for (event of request.timeline || []; track $index) {
+                  <div class="rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800">
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ event.status }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ event.time }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ event.actor }}</p>
+                  </div>
+                  }
+                </div>
+              </div>
+            </td>
+          </tr>
+          }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
