@@ -107,6 +107,12 @@ export class MenusComponent implements OnInit {
   }
 
   submitMenu() {
+    console.log('submitMenu called', {
+      editingMenuId: this.editingMenuId,
+      formValue: this.menuForm.getRawValue(),
+      isValid: this.menuForm.valid,
+    });
+
     if (this.menuForm.invalid) {
       this.menuForm.markAllAsTouched();
       return;
