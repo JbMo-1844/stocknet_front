@@ -28,6 +28,7 @@ export class MenusComponent implements OnInit {
   showMenuForm = false;
   message = '';
   editingMenuId: number | null = null;
+  formSubmitted = false;
   selectedDay = 'Monday';
   activeMealType: string | null = null;
 
@@ -70,6 +71,7 @@ export class MenusComponent implements OnInit {
   toggleForm() {
     this.showMenuForm = !this.showMenuForm;
     this.message = '';
+    this.formSubmitted = false;
     if (!this.showMenuForm) {
       this.resetForm();
       this.editingMenuId = null;
@@ -107,6 +109,7 @@ export class MenusComponent implements OnInit {
   }
 
   submitMenu() {
+    this.formSubmitted = true;
     console.log('submitMenu called', {
       editingMenuId: this.editingMenuId,
       formValue: this.menuForm.getRawValue(),
@@ -115,6 +118,7 @@ export class MenusComponent implements OnInit {
 
     if (this.menuForm.invalid) {
       this.menuForm.markAllAsTouched();
+      this.message = 'Please fill in all required fields before saving.';
       return;
     }
 
@@ -206,6 +210,7 @@ export class MenusComponent implements OnInit {
 
   private resetForm() {
     this.menuForm.reset({ day: 'Monday', cell: 'A', cellLeader: '', mealType: 'Breakfast', mealName: '', menuItems: [] });
+    this.formSubmitted = false;
     this.menuItemsArray.clear();
     this.menuItemsArray.push(this.createMenuItemGroup());
   }

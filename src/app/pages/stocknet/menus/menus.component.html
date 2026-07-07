@@ -67,9 +67,13 @@
         <div class="text-sm text-gray-500 dark:text-gray-400">Cell {{ menuForm.get('cell')?.value }} · {{ menuForm.get('cellLeader')?.value || 'Add a cell leader' }}</div>
       </div>
 
-      <div class="mt-6 grid gap-4 lg:grid-cols-3">
+      <div class="mt-4 rounded-2xl border border-red-100 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-300" @if="formSubmitted && menuForm.invalid">
+        Please complete all required fields before saving. Required fields are marked with <span class="text-red-500">*</span>.
+      </div>
+
+      <div class="mt-6 grid gap-4 lg:grid-cols-4">
         <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Day</label>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Day <span class="text-red-500">*</span></label>
           <select formControlName="day" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
             @for (day of daysOfWeek; track day) {
               <option [value]="day">{{ day }}</option>
@@ -77,7 +81,7 @@
           </select>
         </div>
         <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Cell</label>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Cell <span class="text-red-500">*</span></label>
           <select formControlName="cell" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800">
             @for (cell of cells; track cell) {
               <option [value]="cell">Cell {{ cell }}</option>
@@ -85,8 +89,14 @@
           </select>
         </div>
         <div>
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Cell leader</label>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Cell leader <span class="text-red-500">*</span></label>
           <input formControlName="cellLeader" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+          <p *ngIf="formSubmitted && menuForm.get('cellLeader')?.invalid" class="mt-1 text-xs text-red-600">Cell leader is required.</p>
+        </div>
+        <div>
+          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-200">Meal name <span class="text-red-500">*</span></label>
+          <input formControlName="mealName" class="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-800" />
+          <p *ngIf="formSubmitted && menuForm.get('mealName')?.invalid" class="mt-1 text-xs text-red-600">Meal name is required.</p>
         </div>
       </div>
 
